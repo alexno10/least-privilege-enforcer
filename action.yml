@@ -1,0 +1,48 @@
+name: "Least-Privilege Enforcer"
+description: "Pins GitHub Actions to immutable commit SHAs and enforces least-privilege GITHUB_TOKEN permissions via automated PRs."
+author: "alexno10"
+
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  github_token:
+    description: "GitHub token with contents: write and pull-requests: write permissions to resolve tags and open remediation PRs."
+    required: true
+    default: ${{ github.token }}
+  workflows_dir:
+    description: "Path to the directory containing GitHub Actions workflow YAML files."
+    required: false
+    default: ".github/workflows"
+  repo:
+    description: "Target GitHub repository in owner/repo format."
+    required: false
+    default: ${{ github.repository }}
+  dry_run:
+    description: "When true, prints unified diffs to stdout without modifying files or creating a Pull Request."
+    required: false
+    default: "false"
+  force:
+    description: "When true, recalculates and overwrites existing job-level permissions blocks even if not set to write-all."
+    required: false
+    default: "false"
+
+outputs:
+  pr-number:
+    description: "The Pull Request number created or updated by Least-Privilege Enforcer."
+  pr-url:
+    description: "The HTML URL of the created or updated remediation Pull Request."
+  branch:
+    description: "The Git branch name pushed by Least-Privilege Enforcer."
+  modified-workflows:
+    description: "The number of workflow files remediated."
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - "--workflows-dir=${{ inputs.workflows_dir }}"
+    - "--repo=${{ inputs.repo }}"
+    - "--dry-run=${{ inputs.dry_run }}"
+    - "--force=${{ inputs.force }}"

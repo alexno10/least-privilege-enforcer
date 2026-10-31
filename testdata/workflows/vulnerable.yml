@@ -1,0 +1,45 @@
+# Supply-Chain Vulnerable CI Workflow
+# This header comment must be preserved by the YAML AST mutator.
+name: Vulnerable CI & Release Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Over-privileged top-level token permission
+permissions: write-all
+
+jobs:
+  # Job 1: Security scanning without explicit job-level permissions
+  security-scan:
+    runs-on: ubuntu-latest
+    # Step list comment that must remain attached to steps
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Run local helper action
+        uses: ./.github/actions/local-helper
+
+      - name: Run container image check
+        uses: docker://alpine:3.19
+
+      - name: Upload SARIF results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+
+  # Job 2: Release automation with write-all permissions and shell gh CLI usage
+  release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@main
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2.0.5
+
+      - name: Notify pull request
+        run: |
+          echo "Publishing release notes"
+          gh pr comment 42 --body "Release completed"
