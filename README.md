@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Run Least-Privilege Enforcer
-        uses: alexno10/least-privilege-enforcer@75aecd6edf2b9fb19c7285a814a8f4713ab38da9 # v1.0.0
+        uses: alexno10/least-privilege-enforcer@d059c670011e2d2c91e1dd2e8f17d3de63989735 # v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflows_dir: ".github/workflows"
